@@ -3,6 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, } from 'react'
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Globe } from 'lucide-react';
+
 export function LocaleSwitcher({ locales }: { locales: string[] }) {
 
   const [local, setLocal] = useState<string>("")
@@ -31,16 +41,16 @@ export function LocaleSwitcher({ locales }: { locales: string[] }) {
 
   return (
     <div className="flex gap-2">
-      {locales.map((lng) => (
-        <button
-          key={lng}
-          onClick={() => changeLocal(lng)}
 
-          className="text-sm px-2 py-1 border rounded hover:bg-gray-100"
-        >
-          {lng.toUpperCase()}
-        </button>
-      ))}
+      <DropdownMenu>
+        <DropdownMenuTrigger><Globe /></DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {locales.map((lng) => (
+            <DropdownMenuItem key={lng} onClick={() => changeLocal(lng)}>{lng.toUpperCase()}</DropdownMenuItem>
+          ))}
+
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }

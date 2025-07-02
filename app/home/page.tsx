@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import Loading from './loading'
 
-import { fetchPosts, addPost, deletePost } from '@/app/home/PostAction'
+import { fetchPosts, addPost, deletePost, editPost } from '@/app/home/PostAction'
 import { asc } from 'drizzle-orm'
 import { Ellipsis } from 'lucide-react';
 
@@ -19,6 +19,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 type PostType = {
   id: string
@@ -33,6 +43,9 @@ const HomePage = () => {
   const [posts, setPosts] = useState<PostType[]>([])
   const [newPost, setNewPost] = useState({ title: '', content: '' })
   const [loading, setLoading] = useState(true)
+  const [openDialog, setOpenDialog] = useState(false)
+  const [currentPost, setCurrentPost] = useState<PostType | null>(null)
+  const [updatedPost, setUpdatedPost] = useState({ id: '', title: '', content: '' })
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -86,6 +99,30 @@ const HomePage = () => {
 
     }
   }
+  const handleEditPost = (post: PostType) => {
+    setCurrentPost(post)
+    setUpdatedPost({ id: post.id, title: post.title, content: post.content })
+    setOpenDialog(true)
+  }
+
+  const handleUpdatePost = async () => {
+    if (!updatedPost.title.trim() || !updatedPost.content.trim()) return
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !currentPost) return
+
+    try {
+      // Update the post using the server action
+      const updated = await editPost(updatedPost.id, updatedPost.title, updatedPost.content) // You can replace this with actual update logic
+      setPosts(posts.map(post => (post.id === currentPost.id ? updated : post)))
+      setOpenDialog(false)
+      setCurrentPost(null)
+    } catch (error) {
+      console.error('Failed to update post:', error)
+    }
+  }
+
 
   return (
     <div className="max-w-xl mx-auto py-10 px-10">
@@ -118,23 +155,53 @@ const HomePage = () => {
               )}
             >
               <div>
-                <h2 className="text-xl font-semibold">{post.title}</h2>
+                <div className='flex justify-between'>
+                  <h2 className="text-xl font-semibold">{post.title}</h2>
+                  <DropdownMenu >
+                    <DropdownMenuTrigger><Ellipsis /></DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>{t('actions')}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleDeletePost(post.id)}>{t('delete')}</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleEditPost(post)}>{t('edit')}</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu></div>
                 <p>{post.content}</p>
               </div>
-              <DropdownMenu >
-                <DropdownMenuTrigger><Ellipsis /></DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>{t('actions')}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleDeletePost(post.id)}>{t('delete')}</DropdownMenuItem>
-                  <DropdownMenuItem>{t('edit')}</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+
 
             </li>
           ))}
         </ul>
       )}
+
+      {/* Dialog for Editing the Post */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('editPost')}</DialogTitle>
+            <DialogDescription>{t('updateYourPost')}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              value={updatedPost.title}
+              onChange={(e) => setUpdatedPost({ ...updatedPost, title: e.target.value })}
+              placeholder={t('postTitle')}
+            />
+            <Input
+              value={updatedPost.content}
+              onChange={(e) => setUpdatedPost({ ...updatedPost, content: e.target.value })}
+              placeholder={t('postContent')}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handleUpdatePost}>{t('update')}</Button>
+            <Button variant="ghost" onClick={() => setOpenDialog(false)}>
+              {t('cancel')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

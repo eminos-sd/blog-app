@@ -22,5 +22,9 @@
   "addPost": "إضافة منشور",
   "blogPosts": "مدونة التدوينات",
   "edit": "تعديل",
-  "actions": "العمليات"
+  "actions": "العمليات",
+  "update": "تحديث",
+  "cancel": "إلغاء",
+  "editPost": "تعديل المنشور",
+  "updateYourPost": "تحديث منشورك"
 }

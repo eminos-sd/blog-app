@@ -22,5 +22,9 @@
   "addPost": "Add post",
   "blogPosts": "Blog posts",
   "edit": "Edit",
-  "actions": "Actions"
+  "actions": "Actions",
+  "update": "Update",
+  "cancel": "Cancel",
+  "editPost": "Edit post",
+  "updateYourPost": "Update your post"
 }

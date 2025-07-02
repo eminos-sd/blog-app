@@ -3,6 +3,14 @@ import { db } from "@/app/index";
 import { Post } from "../db/schema";
 import { desc, eq, is } from "drizzle-orm";
 
+type PostType = {
+  id: string;
+  title: string;
+  content: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
 // Fetch posts for a specific user
 export const fetchPosts = async (userId: string) => {
   try {
@@ -55,5 +63,25 @@ export const deletePost = async (postId: string) => {
   } catch (error) {
     console.error("Error delete post:", error);
     throw new Error("Failed to delete post");
+  }
+};
+
+export const editPost = async (id: string, title: string, content: string) => {
+  try {
+    const updatedPost = await db
+      .update(Post)
+      .set({ title: title, content: content })
+      .where(eq(Post.id, id))
+      .returning({
+        id: Post.id,
+        title: Post.title,
+        content: Post.content,
+        created_at: Post.created_at,
+        updated_at: Post.updated_at,
+      });
+    return updatedPost[0];
+  } catch (error) {
+    console.error("Error updating post:", error);
+    throw new Error("Failed to update post");
   }
 };

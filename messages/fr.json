@@ -22,5 +22,9 @@
   "addPost": "Ajouter un article",
   "blogPosts": "Articles de blog",
   "edit": "Modifier",
-  "actions": "Actions"
+  "actions": "Actions",
+  "update": "Mettre à jour",
+  "cancel": "Annuler",
+  "editPost": "Modifier la publication",
+  "updateYourPost": "Mettre à jour votre publication"
 }
