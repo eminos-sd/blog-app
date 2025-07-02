@@ -49,14 +49,18 @@ import { getTranslations } from 'next-intl/server'
 import { LocaleSwitcher } from '../LocalSwitcher'
 import NavBarButtons from './NavBarButtons'
 import MobileNavMenu from './MobileNavMenu'
+import NavBarProfile from './NavBarProfile'
+
+
 
 export default async function Navbar() {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  const t = await getTranslations()
+
   const availableLocales = ['en', 'ar', 'fr']
+
 
   return (
     <nav className="w-full px-6 py-4 border-b bg-white flex items-center justify-between">
@@ -67,14 +71,16 @@ export default async function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         <LocaleSwitcher locales={availableLocales} />
         {user ? (
-          <form action="/logout" method="post">
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">{user.email}</span>
-              <Button variant="outline" type="submit">
-                {t('logout')}
-              </Button>
-            </div>
-          </form>
+          // <form action="/logout" method="post">
+          //   <div className="flex items-center gap-4">
+          //     <span className="text-sm text-muted-foreground">{user.email}</span>
+          //     <Button variant="outline" type="submit">
+          //       {t('logout')}
+          //     </Button>
+          //   </div>
+          // </form>
+
+          <NavBarProfile />
         ) : (
           <NavBarButtons />
         )}
