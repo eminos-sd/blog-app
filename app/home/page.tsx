@@ -41,7 +41,7 @@ type PostType = {
 const HomePage = () => {
   const t = useTranslations()
   const [posts, setPosts] = useState<PostType[]>([])
-  const [newPost, setNewPost] = useState({ title: '', content: '' })
+  const [newPost, setNewPost] = useState({ title: '', content: '', image: null as File | null })
   const [loading, setLoading] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
   const [currentPost, setCurrentPost] = useState<PostType | null>(null)
@@ -79,9 +79,9 @@ const HomePage = () => {
 
     try {
       // Call the server action to add the post
-      const newPostData = await addPost(newPost.title, newPost.content, user.id)
+      const newPostData = await addPost(newPost.title, newPost.content, user.id, newPost.image)
       setPosts([newPostData, ...posts])
-      setNewPost({ title: '', content: '' }) // Clear inputs
+      setNewPost({ title: '', content: '', image: null }) // Clear inputs
     } catch (error) {
       console.error('Failed to add post:', error)
     }
@@ -123,6 +123,11 @@ const HomePage = () => {
     }
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null
+    setNewPost({ ...newPost, image: file })
+  }
+
 
   return (
     <div className="max-w-xl mx-auto py-10 px-10">
@@ -139,6 +144,7 @@ const HomePage = () => {
           value={newPost.content}
           onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
         />
+        <Input type="file" onChange={handleFileChange} />
         <Button onClick={handleAddPost}>{t('addPost')}</Button>
       </div>
 
@@ -193,6 +199,7 @@ const HomePage = () => {
               onChange={(e) => setUpdatedPost({ ...updatedPost, content: e.target.value })}
               placeholder={t('postContent')}
             />
+            <Input type="file" onChange={handleFileChange} />
           </div>
           <DialogFooter>
             <Button onClick={handleUpdatePost}>{t('update')}</Button>

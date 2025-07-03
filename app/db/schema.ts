@@ -10,8 +10,8 @@ import { relations } from "drizzle-orm";
 // Define the public users table
 export const User = pgTable("users", {
   id: uuid().primaryKey(),
-  username: varchar({ length: 255 }).notNull().unique(),
-  email: varchar({ length: 255 }).notNull().unique(),
+  username: varchar({ length: 255 }).unique(),
+  email: varchar({ length: 255 }).unique(),
   created_at: timestamp().defaultNow().notNull(),
   updated_at: timestamp().defaultNow().notNull(),
 });
@@ -22,9 +22,9 @@ export const userRelations = relations(User, ({ many }) => ({
   posts: many(Post), // One user can have many posts
 }));
 
-export const userCommitRelations = relations(User, ({ many }) => ({
-  posts: many(Comment), // One user can have many posts
-}));
+// export const userCommitRelations = relations(User, ({ many }) => ({
+//   posts: many(Comment), // One user can have many posts
+// }));
 
 // Define the posts table
 export const Post = pgTable("posts", {
@@ -36,6 +36,7 @@ export const Post = pgTable("posts", {
     .references(() => User.id),
   created_at: timestamp().defaultNow().notNull(),
   updated_at: timestamp().defaultNow().notNull(),
+  image_url: varchar({ length: 255 }),
 });
 
 export type Post = typeof Post.$inferInsert;
@@ -51,17 +52,17 @@ export const PostTagRelations = relations(Post, ({ many }) => ({
   postsTag: many(PostTag), // One user can have many posts
 }));
 
-export const Comment = pgTable("comments", {
-  id: uuid().defaultRandom().primaryKey(),
-  post_id: integer().notNull(),
-  user_id: uuid()
-    .notNull()
-    .references(() => User.id),
-  content: varchar({ length: 1000 }).notNull(),
-  created_at: timestamp().defaultNow().notNull(),
-});
+// export const Comment = pgTable("comments", {
+//   id: uuid().defaultRandom().primaryKey(),
+//   post_id: integer().notNull(),
+//   user_id: uuid()
+//     .notNull()
+//     .references(() => User.id),
+//   content: varchar({ length: 1000 }).notNull(),
+//   created_at: timestamp().defaultNow().notNull(),
+// });
 
-export type Comment = typeof Comment.$inferInsert;
+// export type Comment = typeof Comment.$inferInsert;
 
 // Define the tags table
 export const Tag = pgTable("tags", {

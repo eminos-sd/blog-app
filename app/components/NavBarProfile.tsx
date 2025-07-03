@@ -41,7 +41,9 @@ const NavBarProfile = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() =>
                     router.push('/logout')
-                }><span className="text-sm text-muted-foreground"> {t('logout')}</span></DropdownMenuItem>
+                }>
+                    <span className="text-sm text-muted-foreground"> {t('logout')}</span>
+                </DropdownMenuItem>
 
 
             </DropdownMenuContent>

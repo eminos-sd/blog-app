@@ -2,6 +2,7 @@
 import { db } from "@/app/index";
 import { Post } from "../db/schema";
 import { desc, eq, is } from "drizzle-orm";
+import { createClient } from "@/utils/supabase/server";
 
 type PostType = {
   id: string;
@@ -31,7 +32,8 @@ export const fetchPosts = async (userId: string) => {
 export const addPost = async (
   title: string,
   content: string,
-  userId: string
+  userId: string,
+  image: File | null
 ) => {
   try {
     // Insert new post using Drizzle ORM
@@ -50,7 +52,29 @@ export const addPost = async (
         updated_at: Post.updated_at,
       });
 
-    return newPost[0]; // Return the inserted post
+    const post = newPost[0];
+
+    // If file is provided, upload image and update post with image URL
+    if (image) {
+      const imageUrl = await uploadImage(image, post.id);
+
+      if (imageUrl) {
+        // Update the post with the image URL
+        await db
+          .update(Post)
+          .set({ image_url: imageUrl })
+          .where(eq(Post.id, post.id))
+          .returning({
+            id: Post.id,
+            title: Post.title,
+            content: Post.content,
+            created_at: Post.created_at,
+            updated_at: Post.updated_at,
+          });
+      }
+    }
+
+    return post; // Return the inserted post
   } catch (error) {
     console.error("Error adding post:", error);
     throw new Error("Failed to create post");
@@ -84,4 +108,27 @@ export const editPost = async (id: string, title: string, content: string) => {
     console.error("Error updating post:", error);
     throw new Error("Failed to update post");
   }
+};
+
+const uploadImage = async (file: File, postId: string) => {
+  const supabase = await createClient();
+  const storagePath = `posts/${postId}/${file.name}`;
+  const { data, error } = await supabase.storage
+    .from("post-images")
+    .upload(storagePath, file);
+
+  if (error) {
+    console.error("Error uploading image:", error);
+    return null;
+  }
+
+  const { data: publicData } = supabase.storage
+    .from("post-images")
+    .getPublicUrl(storagePath);
+
+  if (!data) {
+    console.error("Error getting public URL:");
+    return null;
+  }
+  return publicData.publicUrl;
 };

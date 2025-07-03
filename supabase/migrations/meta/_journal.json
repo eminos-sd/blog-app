@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1751371931562,
-      "tag": "0000_premium_absorbing_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1751372258354,
-      "tag": "0001_unknown_spitfire",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1751372413502,
-      "tag": "0002_deep_stone_men",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1751372459377,
-      "tag": "0003_lean_the_call",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1751372815527,
-      "tag": "0004_breezy_blink",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1751374997416,
-      "tag": "0005_sour_anthem",
+      "when": 1751564272563,
+      "tag": "0000_slow_scourge",
       "breakpoints": true
     }
   ]
